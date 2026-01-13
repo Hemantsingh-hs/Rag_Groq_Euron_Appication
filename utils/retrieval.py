@@ -2,11 +2,15 @@
 
 import os, pickle, numpy as np
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 try:
     import faiss
 except:
-    os.system("pip install faiss-cpu")
+    import subprocess, sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "faiss-cpu==1.7.4"])
     import faiss
+
 
 
 from utils.embedding import get_embedding
