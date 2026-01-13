@@ -1,11 +1,13 @@
 # import faiss, pickle, os, numpy as np
 
-import pickle, os, numpy as np
+import os, pickle, numpy as np
 
 try:
     import faiss
 except:
-    import faiss_cpu as faiss
+    os.system("pip install faiss-cpu")
+    import faiss
+
 
 from utils.embedding import get_embedding
 from utils.chunking import chunk_text
