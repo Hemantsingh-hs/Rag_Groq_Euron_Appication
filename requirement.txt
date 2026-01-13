@@ -1,6 +1,6 @@
-groq
 streamlit
-faiss-cpu 
+groq
 numpy
 requests
 python-dotenv
+faiss-cpu==1.7.4
