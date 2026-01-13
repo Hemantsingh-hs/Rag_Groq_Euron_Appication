@@ -1,15 +1,7 @@
 # import faiss, pickle, os, numpy as np
 
-import os, pickle, numpy as np
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-try:
-    import faiss
-except:
-    import subprocess, sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "faiss-cpu==1.7.4"])
-    import faiss
+import pickle, os, numpy as np
+import faiss
 
 
 
