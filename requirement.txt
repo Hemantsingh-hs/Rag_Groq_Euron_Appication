@@ -1,6 +1,6 @@
+faiss-cpu==1.7.4
 streamlit
 groq
 numpy
-requests
 python-dotenv
-faiss-cpu==1.7.4
+requests
