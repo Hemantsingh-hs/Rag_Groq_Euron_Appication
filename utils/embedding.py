@@ -15,10 +15,16 @@
 #     return np.array(data['data'][0]['embedding'], dtype="float32")
 
 import requests, os, numpy as np
+import streamlit as st
 from dotenv import load_dotenv
 load_dotenv()
 
-API_KEY = os.getenv("EURI_API_KEY")
+try:
+    API_KEY = os.getenv("EURI_API_KEY")
+    if not API_KEY:
+        API_KEY = st.secrets["EURI_API_KEY"]
+except Exception:
+    pass
 
 def get_embedding(text, model="text-embedding-3-small"):
     if not text.strip():
