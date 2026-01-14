@@ -1,10 +1,4 @@
-# import faiss, pickle, os, numpy as np
-
-import pickle, os, numpy as np
-import faiss
-
-
-
+import pickle, os, numpy as np, faiss
 from utils.embedding import get_embedding
 from utils.chunking import chunk_text
 
@@ -12,13 +6,23 @@ INDEX_PATH = "faiss_store/index.faiss"
 MAP_PATH = "faiss_store/chunk_mapping.pkl"
 
 def load_faiss_index():
+    # Load existing index if present
     if os.path.exists(INDEX_PATH) and os.path.exists(MAP_PATH):
         index = faiss.read_index(INDEX_PATH)
         chunk_mapping = pickle.load(open(MAP_PATH, "rb"))
         return index, chunk_mapping
 
+    # Build new index
+    os.makedirs("faiss_store", exist_ok=True)
+
+    if not os.path.exists("data/hemant.txt"):
+        raise FileNotFoundError("data/hemant.txt not found. Please upload your document.")
+
     print("Building FAISS index...")
-    text = open("data/hemant.txt", "r", encoding="utf-8").read()
+
+    with open("data/hemant.txt", "r", encoding="utf-8") as f:
+        text = f.read()
+
     chunks = chunk_text(text)
 
     vectors = [get_embedding(c) for c in chunks]
@@ -27,7 +31,6 @@ def load_faiss_index():
     index = faiss.IndexFlatIP(vectors.shape[1])
     index.add(vectors)
 
-    os.makedirs("faiss_store", exist_ok=True)
     faiss.write_index(index, INDEX_PATH)
     pickle.dump(chunks, open(MAP_PATH, "wb"))
 
