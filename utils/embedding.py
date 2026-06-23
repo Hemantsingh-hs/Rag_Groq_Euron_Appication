@@ -1,3 +1,71 @@
+import requests
+import os
+import numpy as np
+import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_KEY = os.getenv("EURI_API_KEY")
+
+if not API_KEY:
+    try:
+        API_KEY = st.secrets["EURI_API_KEY"]
+    except Exception:
+        API_KEY = None
+
+
+def get_embedding(text, model="text-embedding-3-small"):
+
+    if not text.strip():
+        raise ValueError("Cannot embed empty text")
+
+    if not API_KEY:
+        raise ValueError("Missing EURI_API_KEY")
+
+    response = requests.post(
+        "https://api.euron.one/api/v1/euri/embeddings",
+        headers={
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": model,
+            "input": text
+        },
+        timeout=60
+    )
+
+    try:
+        data = response.json()
+    except Exception as e:
+        raise ValueError(
+            f"Failed to parse JSON: {e}, response text: {response.text}"
+        )
+
+    # Handle API errors
+    if response.status_code != 200:
+
+        error_message = data.get("error", {}).get(
+            "message",
+            "Unknown API error"
+        )
+
+        raise ValueError(
+            f"Euron API Error ({response.status_code}): {error_message}"
+        )
+
+    # Validate response format
+    if "data" not in data:
+        raise ValueError(
+            f"Unexpected API response format: {data}"
+        )
+
+    embedding = data["data"][0]["embedding"]
+
+    return np.array(embedding, dtype="float32")
+
+
 # import requests, os, numpy as np
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -14,35 +82,35 @@
 #     data = r.json()
 #     return np.array(data['data'][0]['embedding'], dtype="float32")
 
-import requests, os, numpy as np
-import streamlit as st
-from dotenv import load_dotenv
-load_dotenv()
+# import requests, os, numpy as np
+# import streamlit as st
+# from dotenv import load_dotenv
+# load_dotenv()
 
-try:
-    API_KEY = os.getenv("EURI_API_KEY")
-    if not API_KEY:
-        API_KEY = st.secrets["EURI_API_KEY"]
-except Exception:
-    pass
+# try:
+#     API_KEY = os.getenv("EURI_API_KEY")
+#     if not API_KEY:
+#         API_KEY = st.secrets["EURI_API_KEY"]
+# except Exception:
+#     pass
 
-def get_embedding(text, model="text-embedding-3-small"):
-    if not text.strip():
-        raise ValueError("Cannot embed empty text")
+# def get_embedding(text, model="text-embedding-3-small"):
+#     if not text.strip():
+#         raise ValueError("Cannot embed empty text")
     
-    r = requests.post(
-        "https://api.euron.one/api/v1/euri/embeddings",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"model": model, "input": text},
-        timeout=60
-    )
+#     r = requests.post(
+#         "https://api.euron.one/api/v1/euri/embeddings",
+#         headers={"Authorization": f"Bearer {API_KEY}"},
+#         json={"model": model, "input": text},
+#         timeout=60
+#     )
     
-    try:
-        data = r.json()
-    except Exception as e:
-        raise ValueError(f"Failed to parse JSON: {e}, response text: {r.text}")
+#     try:
+#         data = r.json()
+#     except Exception as e:
+#         raise ValueError(f"Failed to parse JSON: {e}, response text: {r.text}")
     
-    if "data" not in data:
-        raise ValueError(f"Euron API returned error or unexpected format: {data}")
+#     if "data" not in data:
+#         raise ValueError(f"Euron API returned error or unexpected format: {data}")
     
-    return np.array(data['data'][0]['embedding'], dtype="float32")
+    # return np.array(data['data'][0]['embedding'], dtype="float32")
