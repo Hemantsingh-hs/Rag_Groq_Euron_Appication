@@ -2,7 +2,6 @@ streamlit
 groq
 numpy==1.26.4
 python-dotenv
-requests
 faiss-cpu==1.8.0
 sentence-transformers
 torch
